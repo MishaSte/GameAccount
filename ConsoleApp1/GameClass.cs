@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameAccount
+﻿namespace GameAccount
 {
     public class Game
     {
-        public string OpponentName { get; }
+        public string OpponentName { get; private set; }
         public int Rating { get; } // рейтинг на який грають
         public bool GameResult { get; } // Перевірка результату гри
 
