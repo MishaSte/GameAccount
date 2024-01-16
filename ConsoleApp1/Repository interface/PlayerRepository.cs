@@ -6,6 +6,7 @@
         GameAccount Read(int playerId); // Отримати гравця по ID
         IEnumerable<GameAccount> GetAll();
         IEnumerable<BaseGame> GetGamesForPlayer(GameAccount player);
+        GameAccount GetPlayerByName(string playerName);
     }
 
     public class PlayerRepository : IPlayerRepository
@@ -42,6 +43,11 @@
         public IEnumerable<BaseGame> GetGamesForPlayer(GameAccount player)
         {
             return _context.Games.Where(game => game.Player.UserId == player.UserId);
+        }
+
+        public GameAccount GetPlayerByName(string playerName)
+        {
+            return _context.Players.FirstOrDefault(player => player.UserName == playerName);
         }
     }
 }

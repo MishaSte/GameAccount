@@ -5,18 +5,20 @@
         public string UserName { get; set; }
         public int CurrentRating { get; set; }
         public int UserId { get; internal set; }
+        public GameAccountType AccountType { get; set; }
 
         public int GamesCount = 0;
         protected int WinStreak = 0;
         protected int LoseStreak = 0;
 
-        protected List<Game> GameHistory = new List<Game>();
+        public List<Game> GameHistory = new List<Game>();
 
-        public GameAccount(string name, int rate, int GameAmount) // Конструктор
+        public GameAccount(string name, int rate, int GameAmount, GameAccountType accountType) // Конструктор
         {
             UserName = name;
             CurrentRating = rate;
             GamesCount = GameAmount;
+            AccountType = accountType;
         }
 
         public virtual int WinGame(BaseGame baseGame)
@@ -43,7 +45,7 @@
                 {
                     GameAccountFactory.ChangeAccountType(this, GameAccountType.Normal);
                 }
-                    return CurrentRating;
+                return CurrentRating;
             }
             catch (Exception e)
             {

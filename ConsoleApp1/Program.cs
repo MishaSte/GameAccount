@@ -2,65 +2,73 @@
 {
     public class Program
     {
+        private static void AddMock(GameService gameService, PlayerService playerService)
+        {
+            var player1 = new GameAccount("John", 100, 0, GameAccountType.Normal);
+            var player2 = new GameAccount("Bernt", 100, 0, GameAccountType.Normal);
+
+            playerService.CreatePlayer(player1);
+            playerService.CreatePlayer(player2);
+
+            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+
+            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+
+            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+        }
         static void Main(string[] args)
         {
             var dbContext = new DbContext();
             var playerRepository = new PlayerRepository(dbContext);
-            var playerService = new PlayerService(playerRepository);
             var gameRepository = new GameRepository(dbContext);
             var gameService = new GameService(gameRepository);
+            var playerService = new PlayerService(playerRepository);
 
-            var player1 = playerService.CreatePlayer(new GameAccount("Player1", 100, 0));
-            var player2 = playerService.CreatePlayer(new GameAccount("Player2", 100, 0));
+            var gameUI = new UIGame(gameService, playerService);
+            var playerUI = new UIPlayer(playerService);
 
-            var game = gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win);
-            var game1 = gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Lose);
-            var game2 = gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win);
+            AddMock(gameService, playerService);
 
-            player2.WinGame(game);
-            player1.LoseGame(game1);
-            player1.WinGame(game2);
+            Console.WriteLine("\n\nWelcome to the game UI!");
 
+            Dictionary<int, (string commandInfo, Action command)> uiCommands = new Dictionary<int, (string, Action)>
+    {
+        { 1, ("Create a game account", playerUI.CreateAccount) },
+        { 2, ("Play a game", gameUI.CreateGame) },
+        { 3, ("Print the list of players", playerUI.DisplayAllPlayers) },
+        { 4, ("Print the list of games", gameUI.DisplayAllGames) },
+        { 5, ("Exit", () => Environment.Exit(0)) }
+    };
 
-            Console.WriteLine(player1.GetStats());
-            Console.WriteLine(player2.GetStats());
-
-            var gamesForPlayer1 = playerService.GetGamesForPlayer(player1);
-            Console.WriteLine("\nGames for Player 1:");
-            foreach (var gameItem in gamesForPlayer1)
+            while (true)
             {
-                string result = gameItem.Result == GameResult.Win ? "Win" : "Lose";
-                string opponent = gameItem.Result == GameResult.Win ? gameItem.Opponent.UserName : gameItem.Player.UserName;
-                Console.WriteLine($"Game against {opponent}, Result: {result}");
-            }
+                Console.WriteLine("\n-----------------");
 
-            var gamesForPlayer2 = playerService.GetGamesForPlayer(player2);
-            Console.WriteLine("\nGames for Player 2:");
-            foreach (var gameItem1 in gamesForPlayer2)
-            {
-                string result = gameItem1.Result == GameResult.Win ? "Win" : "Lose";
-                string opponent = gameItem1.Result == GameResult.Win ? gameItem1.Opponent.UserName : gameItem1.Player.UserName;
-                Console.WriteLine($"Game against {opponent}, Result: {result}");
-            }
+                foreach (var (optionToPrint, (commandInfo, _)) in uiCommands)
+                    Console.WriteLine($"{optionToPrint}. {commandInfo}");
 
-            var allPlayers = playerService.GetAllPlayers();
-            Console.WriteLine("\nAll Players:");
-            foreach (var player in allPlayers)
-            {
-                Console.WriteLine($"Player: {player.UserName}, Rating: {player.CurrentRating}, Games Played: {player.GamesCount}");
-            }
+                Console.Write("\nChoose an option: ");
 
-            var allGames = gameService.GetAllGames();
-            Console.WriteLine("\nAll Games:");
-            foreach (var gameItem in allGames)
-            {
-                string resultText = gameItem.Result == GameResult.Win ? "Win" : "Lose";
-                string winner = gameItem.Result == GameResult.Win ? gameItem.Player.UserName : gameItem.Opponent.UserName;
-                Console.WriteLine($"Game: {gameItem.Player.UserName} vs {gameItem.Opponent.UserName} - Result: {resultText} - Winner: {winner}");
+                var choice = Console.ReadLine();
+
+                if (int.TryParse(choice, out var optionToChoose) && uiCommands.ContainsKey(optionToChoose))
+                {
+                    uiCommands[optionToChoose].command();
+                }
+                else
+                {
+                    Console.WriteLine("\nWrong input. Try something else.");
+                }
             }
         }
+
     }
 }
+
 
 
 

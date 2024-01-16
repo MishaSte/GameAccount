@@ -2,7 +2,7 @@
 {
     public class LoseStreakGameAcc : GameAccount
     {
-        public LoseStreakGameAcc(string name, int rate, int GameAmount) : base(name, rate, GameAmount)
+        public LoseStreakGameAcc(string name, int rate, int GameAmount, GameAccountType accountType) : base(name, rate, GameAmount,accountType)
         {
         }
 

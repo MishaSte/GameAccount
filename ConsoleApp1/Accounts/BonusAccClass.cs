@@ -2,7 +2,7 @@
 {
     public class BonusAccClass : GameAccount
     {
-        public BonusAccClass(string name, int rate, int GameAmount) : base(name, rate, GameAmount)
+        public BonusAccClass(string name, int rate, int GameAmount, GameAccountType accountType) : base(name, rate, GameAmount, accountType)
         {
         }
         public override int WinGame(BaseGame baseGame)

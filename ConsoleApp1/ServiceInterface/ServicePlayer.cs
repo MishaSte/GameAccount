@@ -4,6 +4,8 @@
     {
         GameAccount CreatePlayer(GameAccount player);
         GameAccount GetPlayerById(int playerId);
+        IEnumerable<GameAccount> GetAllPlayers();
+        GameAccount GetPlayerByName(string playerName);
     }
 
     public class PlayerService : IPlayerService
@@ -29,6 +31,10 @@
         public IEnumerable<BaseGame> GetGamesForPlayer(GameAccount player)
         {
             return _playerRepository.GetGamesForPlayer(player);
+        }
+        public GameAccount GetPlayerByName(string playerName)
+        {
+            return _playerRepository.GetPlayerByName(playerName);
         }
     }
 }
