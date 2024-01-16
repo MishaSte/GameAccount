@@ -2,8 +2,10 @@
 {
     public class GameAccount
     {
-        public string UserName { get; }
+        public string UserName { get; set; }
         public int CurrentRating { get; set; }
+        public int UserId { get; internal set; }
+
         public int GamesCount = 0;
         protected int WinStreak = 0;
         protected int LoseStreak = 0;
@@ -17,7 +19,6 @@
             GamesCount = GameAmount;
         }
 
-
         public virtual int WinGame(BaseGame baseGame)
         {
             try
@@ -29,12 +30,20 @@
                 string OpponentName = baseGame.GetOppName();
                 int rating = baseGame.CalculateRating();
                 CurrentRating += rating;
-                Game GameWin = new Game(OpponentName, rating, true);
-                GameHistory.Add(GameWin);
+                Game gameRecord = new Game(baseGame.Opponent.UserName, baseGame.CalculateRating(), true);
+                GameHistory.Add(gameRecord);
                 GamesCount++;
                 WinStreak++;
                 LoseStreak = 0;
-                return CurrentRating;
+                if (WinStreak >= 3)
+                {
+                    GameAccountFactory.ChangeAccountType(this, GameAccountType.WinStreak);
+                }
+                else if (WinStreak == 0)
+                {
+                    GameAccountFactory.ChangeAccountType(this, GameAccountType.Normal);
+                }
+                    return CurrentRating;
             }
             catch (Exception e)
             {
@@ -63,11 +72,19 @@
                     CurrentRating -= rating;
                 }
                 string OpponentName = baseGame.GetOppName();
-                Game GameLose = new Game(OpponentName, rating, false);
-                GameHistory.Add(GameLose);
+                Game gameRecord = new Game(baseGame.Opponent.UserName, baseGame.CalculateRating(), false);
+                GameHistory.Add(gameRecord);
                 GamesCount++;
                 WinStreak = 0;
                 LoseStreak++;
+                if (LoseStreak >= 3)
+                {
+                    GameAccountFactory.ChangeAccountType(this, GameAccountType.LoseStreak);
+                }
+                else if (LoseStreak == 0)
+                {
+                    GameAccountFactory.ChangeAccountType(this, GameAccountType.Normal);
+                }
                 return CurrentRating;
             }
             catch (Exception e)

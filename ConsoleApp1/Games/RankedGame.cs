@@ -2,17 +2,22 @@
 {
     public class RankedGame : BaseGame
     {
-        public RankedGame(GameAccount player, GameAccount opponent)
+        private string opponentName;
+        private GameResult result;
+
+        public RankedGame(GameAccount player, GameAccount opponent, GameResult result) : base(player, opponent, result)
         {
-            Player = player;
-            Opponent = opponent;
         }
 
         public override string GetOppName()
         {
             return Opponent.UserName;
         }
-        
+        public override string GetPlayerName()
+        {
+            return Player.UserName;
+        }
+
         public override int CalculateRating()
         {
             int DefaultScore = 20;

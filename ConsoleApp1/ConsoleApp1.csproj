@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Repository interface\Accounts\**" />
+    <EmbeddedResource Remove="Repository interface\Accounts\**" />
+    <None Remove="Repository interface\Accounts\**" />
+  </ItemGroup>
+
 </Project>
