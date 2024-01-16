@@ -37,10 +37,10 @@
 
             Dictionary<int, (string commandInfo, Action command)> uiCommands = new Dictionary<int, (string, Action)>
     {
-        { 1, ("Create a game account", playerUI.CreateAccount) },
-        { 2, ("Play a game", gameUI.CreateGame) },
-        { 3, ("Print the list of players", playerUI.DisplayAllPlayers) },
-        { 4, ("Print the list of games", gameUI.DisplayAllGames) },
+        { 1, ("Create game account", playerUI.CreateAccount) },
+        { 2, ("Play game", gameUI.CreateGame) },
+        { 3, ("Print list of players", playerUI.DisplayAllPlayers) },
+        { 4, ("Print list of games", gameUI.DisplayAllGames) },
         { 5, ("Exit", () => Environment.Exit(0)) }
     };
 
