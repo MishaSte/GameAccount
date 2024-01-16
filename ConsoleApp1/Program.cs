@@ -33,7 +33,7 @@
 
             AddMock(gameService, playerService);
 
-            Console.WriteLine("\n\nWelcome to the game UI!");
+            Console.WriteLine("\n\tGAMEUI\t");
 
             Dictionary<int, (string commandInfo, Action command)> uiCommands = new Dictionary<int, (string, Action)>
     {
@@ -46,7 +46,7 @@
 
             while (true)
             {
-                Console.WriteLine("\n-----------------");
+                Console.WriteLine("|--------------------------|");
 
                 foreach (var (optionToPrint, (commandInfo, _)) in uiCommands)
                     Console.WriteLine($"{optionToPrint}. {commandInfo}");
