@@ -1,7 +1,12 @@
-﻿namespace GameAccount
+﻿using System;
+using System.Collections.Generic;
+
+namespace GameAccount
 {
     public class Program
     {
+        private static bool isLoggedIn = false;
+
         private static void AddMock(GameService gameService, PlayerService playerService)
         {
             var player1 = new GameAccount("John", 100, 0, GameAccountType.Normal);
@@ -20,6 +25,7 @@
             player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
             player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
         }
+
         static void Main(string[] args)
         {
             var dbContext = new DbContext();
@@ -35,29 +41,49 @@
 
             Console.WriteLine("\n\tGAMEUI\t");
 
-            Dictionary<int, (string commandInfo, Action command)> uiCommands = new Dictionary<int, (string, Action)>
-    {
-        { 1, ("Create game account", playerUI.CreateAccount) },
-        { 2, ("Play game", gameUI.CreateGame) },
-        { 3, ("Print list of players", playerUI.DisplayAllPlayers) },
-        { 4, ("Print list of games", gameUI.DisplayAllGames) },
-        { 5, ("Exit", () => Environment.Exit(0)) }
-    };
+            Dictionary<int, (string commandInfo, Action command)> uiCommandsNotLoggedIn = new Dictionary<int, (string, Action)>
+            {
+                { 1, ("Create game account", playerUI.CreateAccount) },
+                { 2, ("Log in", () => isLoggedIn = playerUI.LogIn()) },
+                { 3, ("Exit", () => Environment.Exit(0)) }
+            };
+
+            Dictionary<int, (string commandInfo, Action command)> uiCommandsLoggedIn = new Dictionary<int, (string, Action)>
+            {
+                { 1, ("Play game", gameUI.CreateGame) },
+                { 2, ("View game history", gameUI.DisplayAllGames) },
+                { 3, ("Exit", () => Environment.Exit(0)) }
+            };
+
+            Dictionary<int, (string commandInfo, Action command)> currentUICommands = uiCommandsNotLoggedIn;
 
             while (true)
             {
                 Console.WriteLine("|--------------------------|");
 
-                foreach (var (optionToPrint, (commandInfo, _)) in uiCommands)
+                if (isLoggedIn)
+                {
+                    Console.WriteLine("Logged in.");
+                    currentUICommands = uiCommandsLoggedIn;
+                }
+                else
+                {
+                    Console.WriteLine("Not logged in.");
+                    currentUICommands = uiCommandsNotLoggedIn;
+                }
+
+                foreach (var (optionToPrint, (commandInfo, _)) in currentUICommands)
+                {
                     Console.WriteLine($"{optionToPrint}. {commandInfo}");
+                }
 
                 Console.Write("\nChoose an option: ");
 
                 var choice = Console.ReadLine();
 
-                if (int.TryParse(choice, out var optionToChoose) && uiCommands.ContainsKey(optionToChoose))
+                if (int.TryParse(choice, out var optionToChoose) && currentUICommands.ContainsKey(optionToChoose))
                 {
-                    uiCommands[optionToChoose].command();
+                    currentUICommands[optionToChoose].command();
                 }
                 else
                 {
@@ -65,13 +91,5 @@
                 }
             }
         }
-
     }
 }
-
-
-
-
-
-
-

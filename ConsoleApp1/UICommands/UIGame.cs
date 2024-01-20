@@ -27,98 +27,103 @@
 
                 if (allGameAccountsCount == 1)
                 {
-                    Console.WriteLine("\nYou need to create at least two game accounts to create game/n\n ");
+                    Console.WriteLine("\nYou need to create at least two game accounts to create a game\n");
                     break;
                 }
-                else
+
+                Console.WriteLine("\nChoose what type of game you want: \n1. Normal\n2. Ranked");
+                var gameTypeInput = Console.ReadLine();
+                selectedGameType = GameType.Normal;
+
+                if (int.TryParse(gameTypeInput, out int gameTypeValue) && gameTypeValue == 2)
                 {
-                    Console.WriteLine("\nChoose what type of game you want: \n1. Normal\n2. Ranked");
-                    var gameTypeInput = Console.ReadLine();
-                    selectedGameType = GameType.Normal;
-                    if (int.TryParse(gameTypeInput, out int gameTypeValue))
-                    {
-                        switch (gameTypeValue)
-                        {
-                            case 1:
-                                selectedGameType = GameType.Normal;
-                                break;
-                            case 2:
-                                selectedGameType = GameType.Ranked;
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input. Normal game (1) will be automatically selected.");
-                        selectedGameType = GameType.Normal;
-                    }
+                    selectedGameType = GameType.Ranked;
                 }
 
                 Console.Write("\nThe list of created game accounts: \n");
                 foreach (var gameAccount in allGameAccounts)
+                {
                     Console.WriteLine($"{gameAccount.UserId}: {gameAccount.UserName} with {gameAccount.AccountType} account type, Rating: {gameAccount.CurrentRating}");
-
-                Console.WriteLine("\nPlease choose the WINNER from the list by account id");
-                var winnerAccountId = Console.ReadLine();
-
-                if (int.TryParse(winnerAccountId, out int parsedWinnerAccountId))
-                {
-                    var winnerGameAccount = allGameAccounts.FirstOrDefault(account => account.UserId == parsedWinnerAccountId);
-
-                    if (winnerGameAccount != null)
-                    {
-                    }
-                    else
-                    {
-                        Console.WriteLine("Player with the specified ID does not exist.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please enter a valid player ID.");
                 }
 
-                try
+                Console.WriteLine("\nPlease choose the first player from the list by account id");
+                var player1AccountId = Console.ReadLine();
+
+                if (int.TryParse(player1AccountId, out int parsedPlayer1AccountId))
                 {
-                    parsedWinnerAccountId = int.Parse(winnerAccountId ?? "1");
-                    var winnerGameAccount = _playerService.GetPlayerById(parsedWinnerAccountId);
+                    var player1GameAccount = allGameAccounts.FirstOrDefault(account => account.UserId == parsedPlayer1AccountId);
 
-                    Console.WriteLine("\nPlease choose the LOSER from the list by account id");
-                    var loserAccountId = Console.ReadLine();
-
-                    try
+                    if (player1GameAccount != null)
                     {
-                        var parsedLoserAccountId = int.Parse(loserAccountId ?? "2");
-                        var loserGameAccount = _playerService.GetPlayerById(parsedLoserAccountId);
+                        Console.WriteLine("\nPlease choose the second player from the list by account id");
+                        var player2AccountId = Console.ReadLine();
 
-                        if (parsedWinnerAccountId == parsedLoserAccountId)
+                        if (int.TryParse(player2AccountId, out int parsedPlayer2AccountId))
                         {
-                            Console.WriteLine("Winner and Loser cannot be the same account");
-                            return;
+                            var player2GameAccount = allGameAccounts.FirstOrDefault(account => account.UserId == parsedPlayer2AccountId);
+
+                            if (player2GameAccount != null && player1GameAccount.UserId != player2GameAccount.UserId)
+                            {
+                                var ticTacToeGame = new TicTacToeGame();
+                                bool isGameOver = false;
+
+                                Console.WriteLine("\nGame in progress...");
+                                ticTacToeGame.DisplayBoard();
+
+                                while (!isGameOver)
+                                {
+                                    Console.WriteLine($"Player {ticTacToeGame.CurrentPlayer}, enter the number of the square to make your move (1-9): ");
+                                    if (int.TryParse(Console.ReadLine(), out int moveNumber) && moveNumber >= 1 && moveNumber <= 9)
+                                    {
+                                        if (ticTacToeGame.MakeMove(moveNumber))
+                                        {
+                                            ticTacToeGame.DisplayBoard();
+                                            char winner = ticTacToeGame.CheckWinner();
+                                            if (winner != '.')
+                                            {
+                                                Console.WriteLine($"Player {winner} wins!");
+                                                isGameOver = true;
+
+                                                var loserAccountId = allGameAccounts.FirstOrDefault(account => account.UserId != parsedPlayer1AccountId && account.UserId != parsedPlayer2AccountId);
+                                                if (winner == 'X')
+                                                {
+                                                    player1GameAccount.WinGame(_gameService.CreateGame(selectedGameType, player1GameAccount, player2GameAccount, GameResult.Win));
+                                                    player2GameAccount.LoseGame(_gameService.CreateGame(selectedGameType, player2GameAccount, player1GameAccount, GameResult.Lose));
+                                                }
+                                                else
+                                                {
+                                                    player2GameAccount.WinGame(_gameService.CreateGame(selectedGameType, player2GameAccount, player1GameAccount, GameResult.Win));
+                                                    player1GameAccount.LoseGame(_gameService.CreateGame(selectedGameType, player1GameAccount, player2GameAccount, GameResult.Lose));
+                                                }
+
+                                                Console.WriteLine($"\nGame History and Stats of Player {player1GameAccount.UserName} with {player1GameAccount.AccountType}:");
+                                                Console.WriteLine(_playerService.GetPlayerById(player1GameAccount.UserId).GetStats());
+
+                                                Console.WriteLine($"\nGame History and Stats of Player {player2GameAccount.UserName} with {player2GameAccount.AccountType}:");
+                                                Console.WriteLine(_playerService.GetPlayerById(player2GameAccount.UserId).GetStats());
+                                            }
+                                            else if (ticTacToeGame.IsBoardFull())
+                                            {
+                                                Console.WriteLine("It's a draw!");
+                                                isGameOver = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid move. Try again.");
+                                        }
+                                    }
+                                }
+                            }
                         }
-
-                        winnerGameAccount.WinGame(_gameService.CreateGame(selectedGameType, winnerGameAccount, loserGameAccount, GameResult.Win));
-                        loserGameAccount.LoseGame(_gameService.CreateGame(selectedGameType, loserGameAccount, winnerGameAccount, GameResult.Lose));
-
-                        Console.WriteLine($"\nGame History and Stats of WINNER game account - {winnerGameAccount.UserName} with {winnerGameAccount.AccountType}:");
-                        Console.WriteLine(_playerService.GetPlayerById(winnerGameAccount.UserId).GetStats());
-
-                        Console.WriteLine($"\nGame History and Stats of LOSER game account - {loserGameAccount.UserName} with {loserGameAccount.AccountType}:");
-                        Console.WriteLine(_playerService.GetPlayerById(loserGameAccount.UserId).GetStats());
-                    }
-                    catch (FormatException)
-                    {
-                        Console.WriteLine("\nYou have entered an invalid number");
                     }
                 }
-                catch (FormatException)
-                {
-                    Console.WriteLine("\nYou have entered an invalid number");
-                }
-
                 break;
             }
         }
+
+
+
         public void DisplayAllGames()
         {
             var games = _gameService.GetAllGames();

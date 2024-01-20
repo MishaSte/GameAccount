@@ -1,4 +1,6 @@
-﻿namespace GameAccount
+﻿using System.Numerics;
+
+namespace GameAccount
 {
     public class UIPlayer
     {
@@ -63,6 +65,25 @@
                 Console.WriteLine($"Current Rating: {player.CurrentRating}");
             }
         }
+        public bool LogIn()
+        {
+            Console.Write("Enter your username: ");
+            var username = Console.ReadLine();
+
+            var player = _playerService.GetPlayerByName(username);
+
+            if (player != null)
+            {
+                Console.WriteLine($"Welcome, {username}!");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Invalid username. Please try again.");
+                return false;
+            }
+        }
+
         public void DisplayAllPlayers()
         {
             var players = _playerService.GetAllPlayers();
