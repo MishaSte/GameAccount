@@ -2,8 +2,8 @@
 {
     public interface IPlayerRepository
     {
-        GameAccount Create(GameAccount player); // Створити нового гравця
-        GameAccount Read(int playerId); // Отримати гравця по ID
+        GameAccount Create(GameAccount player);
+        GameAccount Read(int playerId);
         IEnumerable<GameAccount> GetAll();
         IEnumerable<BaseGame> GetGamesForPlayer(GameAccount player);
         GameAccount GetPlayerByName(string playerName);

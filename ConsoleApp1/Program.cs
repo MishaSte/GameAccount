@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GameAccount
+﻿namespace GameAccount
 {
     public class Program
     {
@@ -10,20 +7,20 @@ namespace GameAccount
         private static void AddMock(GameService gameService, PlayerService playerService)
         {
             var player1 = new GameAccount("John", 100, 0, GameAccountType.Normal);
-            var player2 = new GameAccount("Bernt", 100, 0, GameAccountType.Normal);
+            // var player2 = new GameAccount("Bernt", 100, 0, GameAccountType.Normal);
 
             playerService.CreatePlayer(player1);
-            playerService.CreatePlayer(player2);
+            //  playerService.CreatePlayer(player2);
 
-            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
-            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+            // player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            // player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
 
-            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
-            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+            // player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            // player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
 
-            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
-            player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
-            player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
+            // player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            // player1.WinGame(gameService.CreateGame(GameType.Ranked, player1, player2, GameResult.Win));
+            // player2.WinGame(gameService.CreateGame(GameType.Ranked, player2, player1, GameResult.Win));
         }
 
         static void Main(string[] args)
@@ -39,7 +36,7 @@ namespace GameAccount
 
             AddMock(gameService, playerService);
 
-            Console.WriteLine("\n\tGAMEUI\t");
+            Console.WriteLine("\n\tTic-Tac-Toe\t");
 
             Dictionary<int, (string commandInfo, Action command)> uiCommandsNotLoggedIn = new Dictionary<int, (string, Action)>
             {

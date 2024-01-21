@@ -12,9 +12,8 @@
 
         private void InitializeBoard()
         {
-            char currentNumber = '1'; // Починаємо з номера 1
+            char currentNumber = '1';
 
-            // Заповнюємо ігрове поле номерами від 1 до 9
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -30,7 +29,6 @@
             int row = -1;
             int column = -1;
 
-            // Перетворюємо номер ходу в координати рядка і стовпця на ігровому полі
             switch (moveNumber)
             {
                 case 1:
@@ -70,12 +68,12 @@
                     column = 2;
                     break;
                 default:
-                    return false; // Недійсний номер ходу
+                    return false;
             }
 
             if (board[row, column] == 'X' || board[row, column] == 'O')
             {
-                return false; // Клітинка вже зайнята
+                return false;
             }
 
             board[row, column] = currentPlayer;
@@ -85,7 +83,6 @@
 
         public char CheckWinner()
         {
-            // Перевірка рядків
             for (int i = 0; i < 3; i++)
             {
                 if (board[i, 0] == board[i, 1] && board[i, 1] == board[i, 2])
@@ -93,8 +90,6 @@
                     return board[i, 0];
                 }
             }
-
-            // Перевірка стовпців
             for (int j = 0; j < 3; j++)
             {
                 if (board[0, j] == board[1, j] && board[1, j] == board[2, j])
@@ -103,7 +98,6 @@
                 }
             }
 
-            // Перевірка діагоналей
             if (board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2])
             {
                 return board[0, 0];
@@ -119,7 +113,6 @@
 
         public bool IsBoardFull()
         {
-            // Перевіряємо, чи всі клітинки зайняті
             foreach (var cell in board)
             {
                 if (cell != 'X' && cell != 'O')
